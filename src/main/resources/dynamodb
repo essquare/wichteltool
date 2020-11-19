@@ -1,0 +1,25 @@
+aws dynamodb create-table \
+    --endpoint-url http://localhost:4569 \
+    --table-name User \
+    --attribute-definitions \
+        AttributeName=userId,AttributeType=S \
+    --key-schema AttributeName=userId,KeyType=HASH \
+    --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
+
+aws dynamodb update-table \
+    --endpoint-url http://localhost:4569 \
+    --table-name User \
+    --attribute-definitions AttributeName=email,AttributeType=S \
+    --global-secondary-index-updates \
+    "[{\"Create\":{\"IndexName\": \"email-index\",\"KeySchema\":[{\"AttributeName\":\"email\",\"KeyType\":\"HASH\"}], \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 10, \"WriteCapacityUnits\": 5},\"Projection\":{\"ProjectionType\":\"ALL\"}}}]"
+
+#aws dynamodb update-table \
+#    --endpoint-url http://localhost:4569 \
+#    --table-name User \
+#    --attribute-definitions AttributeName=phone,AttributeType=S \
+#    --global-secondary-index-updates \
+#    "[{\"Create\":{\"IndexName\": \"phone-index\",\"KeySchema\":[{\"AttributeName\":\"phone\",\"KeyType\":\"HASH\"}], \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 10, \"WriteCapacityUnits\": 5},\"Projection\":{\"ProjectionType\":\"ALL\"}}}]"
+
+
+aws dynamodb list-tables \
+    --endpoint-url http://localhost:4569
