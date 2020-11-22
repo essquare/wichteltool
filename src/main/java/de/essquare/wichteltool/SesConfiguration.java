@@ -14,8 +14,8 @@ public class SesConfiguration {
     private final String dynamoUrl;
     private final String awsRegion;
 
-    public SesConfiguration(@Value("${aws.ses.endpoint.url}") final String endpointUrl,
-                            @Value("${aws.region}") final String awsRegion) {
+    public SesConfiguration(@Value("${aws.ses.endpoint.url}") String endpointUrl,
+                            @Value("${aws.region}") String awsRegion) {
         this.dynamoUrl = endpointUrl;
         this.awsRegion = awsRegion;
      }

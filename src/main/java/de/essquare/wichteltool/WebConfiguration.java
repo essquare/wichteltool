@@ -9,7 +9,6 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -19,12 +18,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Configuration
-@EnableWebMvc
 public class WebConfiguration implements WebMvcConfigurer {
 
     private final String[] allowedOrigins;
 
-    public WebConfiguration(@Value("${web.allowed.origins}") final String[] allowedOrigins) {
+    public WebConfiguration(@Value("${web.allowed.origins}") String[] allowedOrigins) {
         if (allowedOrigins.length == 0) {
             throw new IllegalArgumentException("'web.allowed.origins' may not be empty");
         }
@@ -37,7 +35,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     }
 
     @Override
-    public void addCorsMappings(final CorsRegistry registry) {
+    public void addCorsMappings(CorsRegistry registry) {
         registry
                 .addMapping("/**")
                 .allowedMethods("GET")
@@ -45,7 +43,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     }
 
     @Override
-    public void extendMessageConverters(final List<HttpMessageConverter<?>> converters) {
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.stream()
                   .filter(converter -> converter instanceof MappingJackson2HttpMessageConverter)
                   .forEach(jacksonConv -> reconfigureJacksonConverter((MappingJackson2HttpMessageConverter) jacksonConv));
@@ -56,8 +54,8 @@ public class WebConfiguration implements WebMvcConfigurer {
         registry.addRedirectViewController("/", "index.html");
     }
 
-    private void reconfigureJacksonConverter(final MappingJackson2HttpMessageConverter jacksonConverter) {
-        final ObjectMapper objectMapper = jacksonConverter.getObjectMapper();
+    private void reconfigureJacksonConverter(MappingJackson2HttpMessageConverter jacksonConverter) {
+        ObjectMapper objectMapper = jacksonConverter.getObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         objectMapper.registerModule(new JavaTimeModule());

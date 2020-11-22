@@ -8,8 +8,7 @@ export AWS_PAGER=""
 export AWS_MAX_ATTEMPTS=10
 export AWS_RETRY_MODE=standard
 export DEFAULT_REGION=eu-central-1
-export SERVICES=dynamodb
-#export PORT_WEB_UI=8080
+export SERVICES=dynamodb,ses
 docker-compose up -d
 echo "local setup started successfully"
 

@@ -43,7 +43,7 @@ class Service {
         sesClient.sendEmail(request);
     }
 
-    public User postCode(final String emailOrPhone, final String logincode) {
+    public User postCode(String emailOrPhone, String logincode) {
         if (emailOrPhone == null || logincode == null) {
             return null;
         }
