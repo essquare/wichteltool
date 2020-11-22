@@ -1,3 +1,19 @@
+#!/bin/bash
+
+set -ex
+
+docker-compose down
+
+export AWS_PAGER=""
+export AWS_MAX_ATTEMPTS=10
+export AWS_RETRY_MODE=standard
+export DEFAULT_REGION=eu-central-1
+export SERVICES=dynamodb
+#export PORT_WEB_UI=8080
+docker-compose up -d
+echo "local setup started successfully"
+
+echo "Creating DynamoDb-Table User"
 aws dynamodb create-table \
     --endpoint-url http://localhost:4569 \
     --table-name User \
@@ -12,13 +28,4 @@ aws dynamodb update-table \
     --attribute-definitions AttributeName=email,AttributeType=S \
     --global-secondary-index-updates \
     "[{\"Create\":{\"IndexName\": \"email-index\",\"KeySchema\":[{\"AttributeName\":\"email\",\"KeyType\":\"HASH\"}], \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 10, \"WriteCapacityUnits\": 5},\"Projection\":{\"ProjectionType\":\"ALL\"}}}]"
-
-#aws dynamodb update-table \
-#    --endpoint-url http://localhost:4569 \
-#    --table-name User \
-#    --attribute-definitions AttributeName=phone,AttributeType=S \
-#    --global-secondary-index-updates \
-#    "[{\"Create\":{\"IndexName\": \"phone-index\",\"KeySchema\":[{\"AttributeName\":\"phone\",\"KeyType\":\"HASH\"}], \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 10, \"WriteCapacityUnits\": 5},\"Projection\":{\"ProjectionType\":\"ALL\"}}}]"
-
-
-aws dynamodb list-tables --endpoint-url http://localhost:4569
+echo "Successfully created DynamoDb-Table User."

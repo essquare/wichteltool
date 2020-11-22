@@ -25,7 +25,6 @@ public class SesConfiguration {
         EndpointConfiguration endpointConfiguration = new EndpointConfiguration(dynamoUrl, awsRegion);
         return AmazonSimpleEmailServiceClientBuilder.standard()
                                                     .withEndpointConfiguration(endpointConfiguration)
-                                                    .withRegion(awsRegion)
                                                     .build();
 
     }

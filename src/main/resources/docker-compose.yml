@@ -1,0 +1,19 @@
+version: "2.1"
+
+services:
+  localstack:
+    image: localstack/localstack:0.10.7
+    container_name: wichteltool
+    ports:
+      - "4567-4597:4567-4597"
+      - "${PORT_WEB_UI-8080}:${PORT_WEB_UI-8080}"
+    environment:
+      - SERVICES=${SERVICES- }
+      - DEBUG=1
+      - DATA_DIR=${DATA_DIR- }
+      - PORT_WEB_UI=${PORT_WEB_UI- }
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - LOCALSTACK_HOSTNAME=${LOCALSTACK_HOSTNAME- }
+    volumes:
+      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
