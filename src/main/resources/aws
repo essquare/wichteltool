@@ -22,3 +22,6 @@ aws dynamodb update-table \
 
 
 aws dynamodb list-tables --endpoint-url http://localhost:4569
+
+aws ses verify-email-identity --email-address wichteltool@essquare.de --profile localstack --endpoint-url=http://localhost:4579
+aws ses verify-email-identity --email-address dirk.podolak@essquare.de --profile localstack --endpoint-url=http://localhost:4579

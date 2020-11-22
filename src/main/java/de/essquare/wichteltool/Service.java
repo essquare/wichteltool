@@ -2,6 +2,8 @@ package de.essquare.wichteltool;
 
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
+
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.model.Body;
 import com.amazonaws.services.simpleemail.model.Content;
@@ -31,6 +33,7 @@ class Service {
         }
 
         String logincode = UUID.randomUUID().toString().replaceAll("-", ""); // it's easier to copy&paste without dashes
+        System.out.println("logincode: " + logincode);
         user.setCode(logincode);
         wichteltoolDbRepository.save(user);
 
@@ -43,12 +46,12 @@ class Service {
         sesClient.sendEmail(request);
     }
 
-    public User postCode(String emailOrPhone, String logincode) {
-        if (emailOrPhone == null || logincode == null) {
+    public User postCode(String email, String logincode) {
+        if (email == null || logincode == null) {
             return null;
         }
 
-        User user = wichteltoolDbRepository.getByEmail(emailOrPhone);
+        User user = wichteltoolDbRepository.getByEmail(email);
         if (user == null) {
             return null;
         }
@@ -58,7 +61,29 @@ class Service {
         }
 
         user.setCode(UUID.randomUUID().toString());
+        wichteltoolDbRepository.save(user);
+
+        // don't deliver the partner's userId, deliver the partner's username
+        if (user.getPartner() != null) {
+            User partner = wichteltoolDbRepository.load(user.getPartner());
+            if (partner != null) {
+                user.setPartner(partner.getUsername());
+            }
+        }
 
         return user;
+    }
+
+    public HttpStatus saveUser(final User userWithNewData) {
+        User currentUser = wichteltoolDbRepository.load(userWithNewData.getUserId());
+
+        if (!currentUser.getCode().equals(userWithNewData.getCode())) {
+            return HttpStatus.FORBIDDEN;
+        }
+
+        userWithNewData.setPartner(currentUser.getPartner());
+        wichteltoolDbRepository.save(userWithNewData);
+
+        return HttpStatus.OK;
     }
 }

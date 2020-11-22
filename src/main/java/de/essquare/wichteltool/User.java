@@ -11,19 +11,17 @@ public class User {
 
     private String userId;
     private String email;
-    private String name;
-    private String image;
+    private String username;
     private String code;
     private String partner;
 
     public User() {
     }
 
-    public User(String userId, String email,String name, String image, String code, String partner) {
+    public User(String userId, String email, String username, String code, String partner) {
         this.userId = userId;
         this.email = email;
-        this.name = name;
-        this.image = image;
+        this.username = username;
         this.code = code;
         this.partner = partner;
     }
@@ -42,13 +40,8 @@ public class User {
         return this;
     }
 
-    public User withName(String name) {
-        setName(name);
-        return this;
-    }
-
-    public User withImage(String image) {
-        setImage(image);
+    public User withUsername(String username) {
+        setUsername(username);
         return this;
     }
 
@@ -80,20 +73,12 @@ public class User {
         this.email = email;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getCode() {
@@ -123,15 +108,14 @@ public class User {
         User user = (User) o;
         return Objects.equals(userId, user.userId) &&
                Objects.equals(email, user.email) &&
-               Objects.equals(name, user.name) &&
-               Objects.equals(image, user.image) &&
+               Objects.equals(username, user.username) &&
                Objects.equals(code, user.code) &&
                Objects.equals(partner, user.partner);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, email, name, image, code, partner);
+        return Objects.hash(userId, email, username, code, partner);
     }
 
     @Override
@@ -139,8 +123,7 @@ public class User {
         return "User{" +
                "userId='" + userId + '\'' +
                ", email='" + email + '\'' +
-               ", name='" + name + '\'' +
-               ", image='" + image + '\'' +
+               ", username='" + username + '\'' +
                ", code='" + code + '\'' +
                ", partner='" + partner + '\'' +
                '}';

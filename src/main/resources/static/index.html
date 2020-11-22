@@ -10,25 +10,248 @@
 
     <style>
         body, html {
-            height: 100%;
+            height: 95%;
+        }
+
+        #navbar,
+        #emailBlock,
+        #codeBlock,
+        #emailError,
+        #codeError,
+        #greetingWithoutName,
+        #greetingWithName {
+            display: none;
+        }
+
+        #codeEmail {
+            font-weight: bold;
+        }
+
+        #profileName {
+            margin-bottom: 20px;
+        }
+
+        #avatar {
+            margin-left: 20px;
+            font-size: 2.5rem;
         }
     </style>
 
-    <title>Hello, world!</title>
+    <title>Wichteltool</title>
 </head>
 <body>
-<div class="container h-100">
-    <div class="row h-100 justify-content-center align-items-center">
-        <form class="col-sm-4" action="/api/email" method="post">
-            <div class="form-group">
-                <label for="email">Email address</label>
-                <input class="form-control" id="email" name="email" type="email">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid" id="navbar">
+        <a class="navbar-brand" href="#">essquare Wichteltool</a>
+        <button aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarToggler"
+                data-toggle="collapse"
+                type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggler">
+            <ul class="navbar-nav mr-auto mb-2 mb-lg-0">
+<!--                <li class="nav-item">-->
+<!--                    <a aria-current="page" class="nav-link active" href="#">Home</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="#">Link</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a aria-disabled="true" class="nav-link disabled" href="#" tabindex="-1">Disabled</a>-->
+<!--                </li>-->
+            </ul>
+            <div class="d-flex">
+                <button class="btn btn-primary" onclick="logout()" type="button">Abmelden</button>
+                <a id="avatar" href="#" onclick="showProfileBlock()">
+                    <svg class="bi bi-person-circle" fill="currentColor" height="1em" viewBox="0 0 16 16" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z"/>
+                        <path d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" fill-rule="evenodd"/>
+                        <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z" fill-rule="evenodd"/>
+                    </svg>
+                </a>
             </div>
-            <button class="btn btn-primary" type="submit">Submit</button>
-        </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container h-100">
+    <div class="row h-100 justify-content-center align-items-center contentblock" id="emailBlock">
+        <div class="col-sm-4">
+            <label for="email">Email</label>
+            <input class="form-control" id="email" name="email" type="email">
+            <small class="form-text text-danger" id="emailError">Bitte trage eine gültige Email Adresse ein.</small><br/>
+            <button class="btn btn-primary" onclick="sendEmail()" type="button">neuen Code anfordern</button>
+            <br><br>
+            <p>Zum Anmelden brauchst du einen Logincode, der hier angefordert werden kann.</p>
+            <p>Er wird an diese Email Adresse geschickt.</p>
+        </div>
+    </div>
+
+    <div class="row h-100 justify-content-center align-items-center contentblock" id="codeBlock">
+        <div class="col-sm-4">
+            <label for="code">Logincode für <span id="codeEmail">Email</span></label>
+            <input class="form-control" id="code" name="code" type="text">
+            <small class="form-text text-danger" id="codeError">Ein Fehler ist aufgetreten, versuche es erneut.</small><br/>
+            <button class="btn btn-primary" onclick="showEmailBlock()" type="button">zurück zur Email</button>
+            <button class="btn btn-primary" onclick="sendCode()" type="button">mit Code anmelden</button>
+            <br><br>
+            <p>Trage hier den Logincode aus der Email ein.</p>
+        </div>
+    </div>
+
+    <div class="row h-100 justify-content-center align-items-center contentblock" id="mainBlock">
+        <div class="col-sm-4">
+            <div id="greetingWithoutName">
+                <p>Hallo, bitte vervollständige zuerst dein Profil.</p>
+                <button class="btn btn-primary" onclick="showProfileBlock();" type="button">hier Profil vervollständigen</button>
+            </div>
+            <p id="greetingWithName"></p>
+            <p id="partner">Partner: <span>noch keiner</span></p>
+        </div>
+    </div>
+
+    <div class="row h-100 justify-content-center align-items-center contentblock" id="profileBlock">
+        <div class="col-sm-4">
+            <label for="profileEmail">Email</label>
+            <input class="form-control" id="profileEmail" name="profileEmail" type="email">
+            <label for="profileName">Name</label>
+            <input class="form-control" id="profileName" name="profileName" type="text">
+            <button class="btn btn-primary" onclick="saveProfile()" type="button">Profil speichern</button>
+        </div>
     </div>
 </div>
 
 <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // helpers
+    function show(elementName) {
+        for (contentblock of document.getElementsByClassName("contentblock")) {
+            contentblock.style.display = "none"
+        }
+        document.getElementById(elementName).style.display = "flex"
+    }
+
+    async function sendEmail() {
+        document.getElementById("emailError").style.display = "none"
+
+        const emailField = document.getElementById("email")
+        user.email = emailField.value
+
+        if (!user.email) {
+            document.getElementById("emailError").style.display = "inline"
+            emailField.value = ""
+            return
+        }
+
+        const response = await fetch("http://localhost:5000/api/email", {
+            headers: {"Content-Type": "application/json"},
+            method: "POST",
+            body: JSON.stringify({
+                email: user.email,
+            })
+        })
+
+        if (response.ok) {
+            localStorage.setItem("wichteltooluser", JSON.stringify(user))
+            show("codeBlock")
+            document.getElementById("codeEmail").innerHTML = user.email
+            document.getElementById("code").value = ""
+        } else {
+            document.getElementById("emailError").style.display = "inline"
+            emailField.value = ""
+        }
+    }
+
+    async function sendCode() {
+        document.getElementById("codeError").style.display = "none"
+
+        const codeField = document.getElementById("code")
+        user.code = codeField.value
+
+        const response = await fetch("http://localhost:5000/api/code", {
+            headers: {"Content-Type": "application/json"},
+            method: "POST",
+            body: JSON.stringify({
+                email: user.email,
+                code: user.code,
+            })
+        })
+
+        if (response.ok) {
+            user = await response.json()
+            localStorage.setItem("wichteltooluser", JSON.stringify(user))
+
+            showMainBlock()
+        } else {
+            document.getElementById("codeError").style.display = "inline"
+            codeField.value = ""
+        }
+    }
+
+    async function saveProfile() {
+        user.email = document.getElementById("profileEmail").value
+        user.username = document.getElementById("profileName").value
+
+        const response = await fetch("http://localhost:5000/api/user", {
+            headers: {"Content-Type": "application/json"},
+            method: "POST",
+            body: JSON.stringify(user)
+        })
+
+        if (response.ok) {
+            localStorage.setItem("wichteltooluser", JSON.stringify(user))
+            showMainBlock()
+        }
+    }
+
+    function showEmailBlock() {
+        document.getElementById("email").value = user && user.email ? user.email : ""
+        show("emailBlock")
+    }
+
+    function showProfileBlock() {
+        document.getElementById("profileEmail").value = user.email
+        document.getElementById("profileName").value = user.username
+        show("profileBlock")
+    }
+
+    function showMainBlock() {
+        document.getElementById("navbar").style.display = "flex"
+        if (user.username) {
+            document.getElementById("greetingWithName").innerHTML = "Hallo " + user.username
+            document.getElementById("greetingWithoutName").style.display = "none"
+            document.getElementById("greetingWithName").style.display = "block"
+        } else {
+            document.getElementById("greetingWithoutName").style.display = "block"
+            document.getElementById("greetingWithName").style.display = "none"
+        }
+        if (user.partner) {
+            document.getElementById("partner").getElementsByTagName("span")[0].innerHTML = user.partner
+        }
+        show("mainBlock")
+    }
+
+    function logout() {
+        localStorage.removeItem("wichteltooluser")
+        user = {}
+        document.getElementById("navbar").style.display = "none"
+        showEmailBlock()
+    }
+</script>
+
+<script>
+    // init
+    let user = JSON.parse(localStorage.getItem("wichteltooluser")) || {}
+
+    if (user.code) {
+        console.log("1")
+        showMainBlock()
+    } else {
+        console.log("2")
+        showEmailBlock()
+    }
+</script>
 </body>
 </html>

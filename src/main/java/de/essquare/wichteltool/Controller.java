@@ -22,20 +22,31 @@ public class Controller {
         this.wichteltoolService = wichteltoolService;
     }
 
-    @PostMapping(path = "email", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    public void postEmail(@RequestBody Map<String, String> formData) {
-        wichteltoolService.postEmail(formData.get("email"));
+    @PostMapping(path = "email")
+    public ResponseEntity<Void> postEmail(@RequestBody Map<String, String> data) {
+        String email = data.get("email");
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        wichteltoolService.postEmail(data.get("email"));
+
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
     
     @PostMapping(path = "/code", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> postCode(@RequestParam String email, @RequestParam String logincode) {
-        User user = wichteltoolService.postCode(email, logincode);
+    public ResponseEntity<User> postCode(@RequestBody Map<String, String> data) {
+        User user = wichteltoolService.postCode(data.get("email"), data.get("code"));
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @PostMapping(path = "/user", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> postCode(@RequestBody User user) {
+        return ResponseEntity.status(wichteltoolService.saveUser(user)).build();
     }
 }

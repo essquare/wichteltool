@@ -28,3 +28,6 @@ aws dynamodb update-table \
     --global-secondary-index-updates \
     "[{\"Create\":{\"IndexName\": \"email-index\",\"KeySchema\":[{\"AttributeName\":\"email\",\"KeyType\":\"HASH\"}], \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 10, \"WriteCapacityUnits\": 5},\"Projection\":{\"ProjectionType\":\"ALL\"}}}]"
 echo "Successfully created DynamoDb-Table User."
+
+aws ses verify-email-identity --email-address wichteltool@essquare.de --profile localstack --endpoint-url=http://localhost:4579
+aws ses verify-email-identity --email-address dirk.podolak@essquare.de --profile localstack --endpoint-url=http://localhost:4579
