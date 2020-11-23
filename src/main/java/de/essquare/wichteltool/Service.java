@@ -1,7 +1,9 @@
 package de.essquare.wichteltool;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 
@@ -36,6 +38,10 @@ class Service {
         String logincode = UUID.randomUUID().toString().replaceAll("-", ""); // it's easier to copy&paste without dashes
         System.out.println("logincode: " + logincode);
         user.setCode(logincode);
+        if (wichteltoolDbRepository.usersEmpty()) {
+            // the first user becomes admin
+            user.setAdmin(true);
+        }
         wichteltoolDbRepository.save(user);
 
         SendEmailRequest request = new SendEmailRequest()
@@ -82,13 +88,43 @@ class Service {
             return HttpStatus.FORBIDDEN;
         }
 
+        // this cannot be overwritten
         userWithNewData.setPartner(currentUser.getPartner());
+        userWithNewData.setAdmin(currentUser.isAdmin());
+
         wichteltoolDbRepository.save(userWithNewData);
 
         return HttpStatus.OK;
     }
 
     public List<String> getPlayers() {
-        return List.of("Dirk", "Bea");
+        return wichteltoolDbRepository.loadAllUsers().stream()
+                                      .map(user ->
+                                                   user.getUsername() == null || user.getUsername().isBlank()
+                                                   ? user.getEmail()
+                                                   : user.getUsername())
+                                      .collect(Collectors.toList());
+    }
+
+    public HttpStatus linkPartner(final String userId, final String code) {
+        User currentUser = wichteltoolDbRepository.load(userId);
+
+        if (!currentUser.getCode().equals(code)) {
+            return HttpStatus.FORBIDDEN;
+        }
+
+        if (!currentUser.isAdmin()) {
+            return HttpStatus.FORBIDDEN;
+        }
+
+        List<User> allUsers = wichteltoolDbRepository.loadAllUsers();
+        Collections.shuffle(allUsers);
+
+        allUsers.get(0).setPartner(allUsers.get(allUsers.size() - 1).getUserId());
+        for (int i = 1; i < allUsers.size(); i++) {
+            allUsers.get(i).setPartner(allUsers.get(i - 1).getUserId());
+        }
+
+        return HttpStatus.OK;
     }
 }

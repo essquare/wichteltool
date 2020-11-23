@@ -56,4 +56,9 @@ public class Controller {
     public ResponseEntity<List<String>> getPlayers() {
         return ResponseEntity.status(HttpStatus.OK).body(wichteltoolService.getPlayers());
     }
+
+    @PostMapping(path = "/linkPartner", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> linkPartner(@RequestBody Map<String, String> data) {
+        return ResponseEntity.status(wichteltoolService.linkPartner(data.get("userId"), data.get("code"))).build();
+    }
 }

@@ -17,6 +17,10 @@
             margin-left: 20px;
             font-size: 2.5rem;
         }
+
+        #partnerLinkButton {
+            display: none;
+        }
     </style>
 
     <title>Wichteltool</title>
@@ -42,6 +46,7 @@
                 <!--                <li class="nav-item">-->
                 <!--                    <a aria-disabled="true" class="nav-link disabled" href="#" tabindex="-1">Disabled</a>-->
                 <!--                </li>-->
+                <li><button id="partnerLinkButton" class="btn btn-primary" onclick="linkPartner()" type="button">Partner zuweisen</button></li>
             </ul>
             <div class="d-flex">
                 <button class="btn btn-primary" onclick="logout()" type="button">Abmelden</button>
@@ -60,12 +65,8 @@
 <div class="container h-100">
     <div class="row h-100 justify-content-center align-items-center contentblock" id="mainBlock">
         <div class="col-sm-4">
-            <div id="greetingWithoutName">
-                <p>Hallo, bitte vervollständige zuerst dein Profil.</p>
-                <button class="btn btn-primary" onclick="showProfile();" type="button">hier Profil vervollständigen</button>
-            </div>
-            <p id="greetingWithName"></p>
-            <p id="partner">Partner: <span>noch keiner</span></p>
+            <p>Hallo <span id="name"></span></p>
+            <p>Partner: <span id="partner">noch keiner</span></p>
             <p>bislang registrierte Mitspieler:</p>
             <ul id="players"></ul>
         </div>
@@ -77,40 +78,26 @@
 <script>
     function syncInit() {
         if (user.username) {
-            greetingWithNameField.innerHTML = "Hallo " + user.username
-            greetingWithNameField.style.display = "block"
-            greetingWithoutNameField.style.display = "none"
-        } else {
-            greetingWithNameField.style.display = "none"
-            greetingWithoutNameField.style.display = "block"
+            nameField.innerHTML = user.username
         }
 
         if (user.partner) {
             partnerField.innerHTML = user.partner
+        }
+
+        if (user.admin) {
+            partnerLinkButton.style.display = "flex"
         }
     }
 
     async function asyncInit() {
-        if (user.username) {
-            greetingWithNameField.innerHTML = "Hallo " + user.username
-            greetingWithNameField.style.display = "block"
-            greetingWithoutNameField.style.display = "none"
-        } else {
-            greetingWithNameField.style.display = "none"
-            greetingWithoutNameField.style.display = "block"
-        }
-
-        if (user.partner) {
-            partnerField.innerHTML = user.partner
-        }
-
         const response = await fetch("http://localhost:5000/api/players")
         if (response.ok) {
-            players = await response.json()
+            const players = await response.json()
             for (let player of players) {
                 const li = document.createElement("li")
                 li.innerHTML = player
-                playersField.appendChild(li)
+                playersList.appendChild(li)
             }
         }
     }
@@ -125,16 +112,30 @@
         document.getElementById("navbar").style.display = "none"
         window.location.href = "index.html"
     }
+
+    async function linkPartner() {
+        const response = await fetch("http://localhost:5000/api/linkPartner", {
+            headers: {"Content-Type": "application/json"},
+            method: "POST",
+            body: JSON.stringify({
+                userId: user.userId,
+                code: user.code,
+            })
+        })
+
+        if (response.ok) {
+            window.location.href = "main.html"
+        }
+    }
 </script>
 
 <script>
     let user = JSON.parse(localStorage.getItem("wichteltooluser")) || {}
-    let players = []
 
-    const greetingWithNameField = document.getElementById("greetingWithName")
-    const greetingWithoutNameField = document.getElementById("greetingWithoutName")
-    const partnerField = document.getElementById("partner").getElementsByTagName("span")[0]
-    const playersField = document.getElementById("players")
+    const nameField = document.getElementById("name")
+    const partnerField = document.getElementById("partner")
+    const playersList = document.getElementById("players")
+    const partnerLinkButton = document.getElementById("partnerLinkButton")
 
     syncInit()
     asyncInit()
