@@ -1,5 +1,6 @@
 package de.essquare.wichteltool;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -85,5 +86,9 @@ class Service {
         wichteltoolDbRepository.save(userWithNewData);
 
         return HttpStatus.OK;
+    }
+
+    public List<String> getPlayers() {
+        return List.of("Dirk", "Bea");
     }
 }
