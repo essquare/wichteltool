@@ -91,7 +91,22 @@
     }
 
     async function asyncInit() {
-        const response = await fetch("http://localhost:5000/api/players")
+        // refresh user
+        if (user) {
+            const response = await fetch(`${baseUrl}/user?userId=${user.userId}&code=${user.code}`, {
+                headers: {"Content-Type": "application/json"},
+                method: "GET",
+            })
+
+            if (response.ok) {
+                user = await response.json()
+                localStorage.setItem("wichteltooluser", JSON.stringify(user))
+                syncInit()
+            }
+        }
+
+        // get and show players
+        const response = await fetch(`${baseUrl}/players`)
         if (response.ok) {
             const players = await response.json()
             for (let player of players) {
@@ -114,7 +129,7 @@
     }
 
     async function linkPartner() {
-        const response = await fetch("http://localhost:5000/api/linkPartner", {
+        const response = await fetch(`${baseUrl}/linkPartner`, {
             headers: {"Content-Type": "application/json"},
             method: "POST",
             body: JSON.stringify({
@@ -132,6 +147,7 @@
 <script>
     let user = JSON.parse(localStorage.getItem("wichteltooluser")) || {}
 
+    const baseUrl = "http://localhost:5000/api"
     const nameField = document.getElementById("name")
     const partnerField = document.getElementById("partner")
     const playersList = document.getElementById("players")

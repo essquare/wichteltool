@@ -14,7 +14,7 @@ echo "local setup started successfully"
 
 echo "Creating DynamoDb-Table User"
 aws dynamodb create-table \
-    --endpoint-url http://localhost:4569 \
+    --endpoint-url http://localhost:5569 \
     --table-name User \
     --attribute-definitions \
         AttributeName=userId,AttributeType=S \
@@ -22,12 +22,12 @@ aws dynamodb create-table \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 
 aws dynamodb update-table \
-    --endpoint-url http://localhost:4569 \
+    --endpoint-url http://localhost:5569 \
     --table-name User \
     --attribute-definitions AttributeName=email,AttributeType=S \
     --global-secondary-index-updates \
     "[{\"Create\":{\"IndexName\": \"email-index\",\"KeySchema\":[{\"AttributeName\":\"email\",\"KeyType\":\"HASH\"}], \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 10, \"WriteCapacityUnits\": 5},\"Projection\":{\"ProjectionType\":\"ALL\"}}}]"
 echo "Successfully created DynamoDb-Table User."
 
-aws ses verify-email-identity --email-address wichteltool@essquare.de --profile localstack --endpoint-url=http://localhost:4579
-aws ses verify-email-identity --email-address dirk.podolak@essquare.de --profile localstack --endpoint-url=http://localhost:4579
+aws ses verify-email-identity --email-address wichteltool@essquare.de --profile localstack --endpoint-url=http://localhost:5579
+aws ses verify-email-identity --email-address dirk.podolak@essquare.de --profile localstack --endpoint-url=http://localhost:5579

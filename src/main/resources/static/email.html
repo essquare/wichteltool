@@ -24,15 +24,15 @@
 
 <div class="container h-100">
     <div class="row h-100 justify-content-center align-items-center contentblock" id="emailBlock">
-        <div class="col-sm-4">
+        <form class="col-sm-4" onsubmit="sendEmail(event)">
             <label for="emailInput">Email</label>
             <input class="form-control" id="emailInput" name="emailInput" type="email">
             <small class="form-text text-danger" id="emailError">Bitte trage eine gültige Email Adresse ein.</small><br/>
-            <button class="btn btn-primary" onclick="sendEmail()" type="button">neuen Code anfordern</button>
+            <button class="btn btn-primary" type="submit">neuen Code anfordern</button>
             <br><br>
             <p>Zum Anmelden brauchst du einen Logincode, der hier angefordert werden kann.</p>
             <p>Er wird an diese Email Adresse geschickt.</p>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -44,7 +44,10 @@
         emailErrorField.style.display = "none"
     }
 
-    async function sendEmail() {
+    async function sendEmail(event) {
+        console.log(event)
+        event.preventDefault()
+
         emailErrorField.style.display = "none"
 
         if (!emailInputField.value) {
@@ -53,7 +56,7 @@
             return
         }
 
-        const response = await fetch("http://localhost:5000/api/email", {
+        const response = await fetch(`${baseUrl}/email`, {
             headers: {"Content-Type": "application/json"},
             method: "POST",
             body: JSON.stringify({
@@ -75,6 +78,7 @@
 <script>
     let user = JSON.parse(localStorage.getItem("wichteltooluser")) || {}
 
+    const baseUrl = "http://localhost:5000/api"
     const emailErrorField = document.getElementById("emailError")
     const emailInputField = document.getElementById("emailInput")
 

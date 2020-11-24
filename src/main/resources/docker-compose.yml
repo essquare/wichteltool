@@ -5,10 +5,10 @@ services:
     image: localstack/localstack
     container_name: wichteltool
     ports:
-      - "4566:4566"
-      - "4569:4569"
-      - "4571:4571"
-      - "4579:4579"
+      - "5566:4566"
+      - "5569:4569"
+      - "5571:4571"
+      - "5579:4579"
       - "${PORT_WEB_UI-8080}:${PORT_WEB_UI-8080}"
     environment:
       - SERVICES=${SERVICES- }
