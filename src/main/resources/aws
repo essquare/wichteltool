@@ -47,6 +47,9 @@ eb create dev-env-1 -k dirk_essquare_1 -c wichteltool -d --profile essquare -r e
 # delete application
 #eb terminate --all
 
+# WARNING: this will zip the last git commit, not the current directory
+eb deploy
+
 eb ssh dev-env-1
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 dirk@dirk-podolak-notebook:~/code/essquare/wichteltool$ eb init --help
@@ -88,4 +91,29 @@ deploy:
 eb create dev-env-2 -k dirk_essquare_1 -c wichteltool2 -d --profile essquare -r eu-central-1
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 zip ../wichteltool.zip -r * .[^.]* -x .idea/\* target/\* .git/\*
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+some info: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/iam-instanceprofile.html
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:UpdateItem"
+            ],
+            "Resource": [
+                "arn:aws:dynamodb:eu-central-1:198565159813:table/UserTable",
+                "arn:aws:dynamodb:eu-central-1:198565159813:table/UserTable/index/email-index"
+            ]
+        }
+    ]
+}
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

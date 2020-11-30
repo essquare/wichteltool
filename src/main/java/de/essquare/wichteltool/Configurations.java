@@ -12,9 +12,9 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
@@ -25,8 +25,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 
 @Configuration
 public class Configurations implements WebMvcConfigurer {
@@ -92,7 +90,6 @@ public class Configurations implements WebMvcConfigurer {
         return AmazonSimpleEmailServiceClientBuilder.standard()
                                                     .withEndpointConfiguration(endpointConfiguration)
                                                     .build();
-
     }
 
     @Bean
