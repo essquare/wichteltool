@@ -81,7 +81,10 @@
         profileNameField.value = user.username || ""
     }
 
-    async function saveProfile() {
+    async function saveProfile(event) {
+        console.log(event)
+        event.preventDefault()
+
         user.email = profileEmailField.value
         user.username = profileNameField.value
 
@@ -94,6 +97,8 @@
         if (response.ok) {
             localStorage.setItem("wichteltooluser", JSON.stringify(user))
             window.location.href = "main.html"
+        } else {
+            console.error(response)
         }
     }
 

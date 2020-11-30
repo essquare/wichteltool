@@ -69,6 +69,7 @@
             localStorage.setItem("wichteltooluser", JSON.stringify(user))
             window.location.href = "main.html"
         } else {
+            console.error(response)
             codeErrorField.style.display = "inline"
             codeInputField.value = ""
         }

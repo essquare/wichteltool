@@ -102,6 +102,8 @@
                 user = await response.json()
                 localStorage.setItem("wichteltooluser", JSON.stringify(user))
                 syncInit()
+            } else {
+                console.error(response)
             }
         }
 
@@ -114,6 +116,8 @@
                 li.innerHTML = player
                 playersList.appendChild(li)
             }
+        } else {
+            console.error(response)
         }
     }
 
@@ -140,6 +144,8 @@
 
         if (response.ok) {
             window.location.href = "main.html"
+        } else {
+            console.error(response)
         }
     }
 </script>

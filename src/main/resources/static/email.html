@@ -69,6 +69,7 @@
             localStorage.setItem("wichteltooluser", JSON.stringify(user))
             window.location.href = "code.html"
         } else {
+            console.error(response)
             emailErrorField.style.display = "inline"
             emailInputField.value = ""
         }
