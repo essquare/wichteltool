@@ -50,7 +50,8 @@ class Service {
                 .withMessage(new Message()
                                      .withBody(new Body().withText(new Content().withCharset("UTF-8").withData("dein Login Code lautet " + logincode)))
                                      .withSubject(new Content().withCharset("UTF-8").withData("Login Code")))
-                .withSource("wichteltool@essquare.de");
+//                .withSource("wichteltool@essquare.de");
+                .withSource("dirk.podolak@essquare.de");
         sesClient.sendEmail(request);
     }
 
