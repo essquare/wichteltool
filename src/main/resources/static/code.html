@@ -49,7 +49,10 @@
         codeErrorField.style.display = "none"
     }
 
-    async function sendCode() {
+    async function sendCode(event) {
+        console.log(event)
+        event.preventDefault()
+
         codeErrorField.style.display = "none"
 
         const response = await fetch(`${baseUrl}/code`, {
