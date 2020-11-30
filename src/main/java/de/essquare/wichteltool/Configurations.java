@@ -3,6 +3,8 @@ package de.essquare.wichteltool;
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +31,8 @@ import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 @Configuration
 public class Configurations implements WebMvcConfigurer {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Configurations.class);
+
     private final String[] allowedOrigins;
     private final String sesEndpointUrl;
     private final String dynamoDbEndpointUrl;
@@ -53,6 +57,11 @@ public class Configurations implements WebMvcConfigurer {
         this.awsRegion = awsRegion;
         this.dynamoDbEndpointUrl = dynamoDbEndpointUrl;
         this.userTableName = userTableName;
+
+        LOG.info("sesEndpointUrl {}", sesEndpointUrl);
+        LOG.info("awsRegion {}", awsRegion);
+        LOG.info("dynamoDbEndpointUrl {}", dynamoDbEndpointUrl);
+        LOG.info("userTableName {}", userTableName);
     }
 
     @Override
@@ -68,11 +77,6 @@ public class Configurations implements WebMvcConfigurer {
         converters.stream()
                   .filter(converter -> converter instanceof MappingJackson2HttpMessageConverter)
                   .forEach(jacksonConv -> reconfigureJacksonConverter((MappingJackson2HttpMessageConverter) jacksonConv));
-    }
-
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addRedirectViewController("/", "index.html");
     }
 
     private void reconfigureJacksonConverter(MappingJackson2HttpMessageConverter jacksonConverter) {

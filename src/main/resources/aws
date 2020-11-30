@@ -25,3 +25,67 @@ aws dynamodb list-tables --endpoint-url http://localhost:4569
 
 aws ses verify-email-identity --email-address wichteltool@essquare.de --profile localstack --endpoint-url=http://localhost:4579
 aws ses verify-email-identity --email-address dirk.podolak@essquare.de --profile localstack --endpoint-url=http://localhost:4579
+
+aws --profile essquare elasticbeanstalk create-application --application-name Wichteltool --description "essquare Wichteltool"
+aws --profile essquare elasticbeanstalk delete-application --application-name Wichteltool
+
+ssh key: dirk_essquare_1
+-- profile essquare
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--- EB CLI stuff
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# create application (see https://eu-central-1.console.aws.amazon.com/elasticbeanstalk/home?region=eu-central-1#/applications)
+eb init wichteltool --profile essquare -r eu-central-1 -p "Corretto 11 running on 64bit Amazon Linux 2" -k dirk_essquare_1 -v
+
+# create environment (see https://eu-central-1.console.aws.amazon.com/elasticbeanstalk/home?region=eu-central-1#/environments)
+eb create dev-env-1 -k dirk_essquare_1 -c wichteltool -d --profile essquare -r eu-central-1 -v
+
+# delete environment
+#eb terminate
+# delete application
+#eb terminate --all
+
+eb ssh dev-env-1
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+dirk@dirk-podolak-notebook:~/code/essquare/wichteltool$ eb init --help
+usage: eb init <application_name> [options ...]
+
+Initializes your directory with the EB CLI. Creates the application.
+
+positional arguments:
+  application_name      application name
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --debug               toggle debug output
+  --quiet               suppress all output
+  -v, --verbose         toggle verbose output
+  --profile PROFILE     use a specific profile from your credential file
+  -r REGION, --region REGION
+                        use a specific region
+  --no-verify-ssl       don't verify AWS SSL certificates
+  -m [MODULES [MODULES ...]], --modules [MODULES [MODULES ...]]
+                        module directory
+  -p PLATFORM, --platform PLATFORM
+                        default Platform
+  -k KEYNAME, --keyname KEYNAME
+                        default EC2 key name
+  -i, --interactive     force interactive mode
+  --source SOURCE       source of code to set as default; example
+                        source_location/repo/branch
+  --tags TAGS           a comma separated list of tags as key=value pairs
+
+This command is safe when run in a previously initialized directory. To re-initialize with different options, use the -i option. Note this command cannot change the workspace type
+of a directory that was already initialized.
+dirk@dirk-podolak-notebook:~/code/essquare/wichteltool$
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+You may add to your config.yml:
+deploy:
+  artifact: path/to/buildartifact.zip
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+eb create dev-env-2 -k dirk_essquare_1 -c wichteltool2 -d --profile essquare -r eu-central-1
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+zip ../wichteltool.zip -r * .[^.]* -x .idea/\* target/\* .git/\*
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

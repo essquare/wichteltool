@@ -18,7 +18,7 @@
         <aws-sdk.version>1.11.880</aws-sdk.version>
         <spring-boot.version>2.2.4.RELEASE</spring-boot.version>
     </properties>
-        
+
     <dependencyManagement>
         <dependencies>
             <dependency>

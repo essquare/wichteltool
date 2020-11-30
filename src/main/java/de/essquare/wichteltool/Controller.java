@@ -3,6 +3,8 @@ package de.essquare.wichteltool;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class Controller {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
+
     private final Service service;
 
     public Controller(Service service) {
@@ -25,6 +29,9 @@ public class Controller {
 
     @PostMapping(path = "email")
     public ResponseEntity<Void> postEmail(@RequestBody Map<String, String> data) {
+        LOG.info("/api/email");
+        LOG.info("data: {}", data);
+
         String email = data.get("email");
         if (email == null || email.isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

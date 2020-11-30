@@ -36,7 +36,7 @@
             <button class="btn btn-primary" type="submit">mit Code anmelden</button>
             <br><br>
             <p>Trage hier den Logincode aus der Email ein.</p>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -79,7 +79,12 @@
 <script>
     let user = JSON.parse(localStorage.getItem("wichteltooluser")) || {}
 
-    const baseUrl = "http://localhost:5000/api"
+    if (!user || !user.email) {
+        backToEmail()
+    }
+
+    // const baseUrl = "http://localhost:5000/api"
+    const baseUrl = "http://wichteltool2.eu-central-1.elasticbeanstalk.com/api"
     const codeErrorField = document.getElementById("codeError")
     const codeInputField = document.getElementById("codeInput")
     const codeEmailField = document.getElementById("codeEmail")

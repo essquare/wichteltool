@@ -1,1 +1,1 @@
-build: mvn assembly:assembly -DdescriptorId=jar-with-dependencies
+build: mvn clean package
