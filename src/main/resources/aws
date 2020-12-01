@@ -119,3 +119,45 @@ some info: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/iam-instancepr
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 aws ses verify-email-identity --email-address wichteltool@essquare.de --profile essquare
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+I would like to move this into a .ebextensions::config file, but I had to manually create two policies and assign them to the role arn:aws:iam::198565159813:role/aws-elasticbeanstalk-ec2-role:
+
+arn:aws:iam::198565159813:policy/UserTableAccessPolicy
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Sid": "VisualEditor0",
+                    "Effect": "Allow",
+                    "Action": [
+                        "dynamodb:BatchWriteItem",
+                        "dynamodb:PutItem",
+                        "dynamodb:DeleteItem",
+                        "dynamodb:GetItem",
+                        "dynamodb:Scan",
+                        "dynamodb:Query",
+                        "dynamodb:UpdateItem"
+                    ],
+                    "Resource": [
+                        "arn:aws:dynamodb:eu-central-1:198565159813:table/awseb-e-mbvfnmzgk3-stack-UserTable-1WUO1PZ9VLNX4",
+                        "arn:aws:dynamodb:eu-central-1:198565159813:table/awseb-e-mbvfnmzgk3-stack-UserTable-1WUO1PZ9VLNX4/index/email-index"
+                    ]
+                }
+            ]
+        }
+
+arn:aws:iam::198565159813:policy/WichteltoolEmails
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Sid": "VisualEditor0",
+                    "Effect": "Allow",
+                    "Action": [
+                        "ses:SendEmail",
+                        "ses:SendRawEmail"
+                    ],
+                    "Resource": "arn:aws:ses:eu-central-1:198565159813:identity/*"
+                }
+            ]
+        }
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
