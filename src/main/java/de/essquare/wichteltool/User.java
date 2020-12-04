@@ -9,6 +9,11 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 @DynamoDBTable(tableName = "User")
 public class User {
 
+    public static final String EMAIL_KEY = "email";
+    public static final String CODE_KEY = "code";
+    public static final String USER_ID_KEY = "userId";
+    public static final String USERNAME_KEY = "username";
+
     private String userId;
     private String email;
     private String username;

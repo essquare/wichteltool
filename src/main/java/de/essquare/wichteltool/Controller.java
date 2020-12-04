@@ -29,55 +29,101 @@ public class Controller {
 
     @PostMapping(path = "email")
     public ResponseEntity<Void> postEmail(@RequestBody Map<String, String> data) {
-        LOG.info("/api/email");
-        LOG.info("data: {}", data);
+        // ingress
+        LOG.info("POST /api/email with {}", data);
 
-        String email = data.get("email");
+        // validation
+        String email = data.get(User.EMAIL_KEY);
         if (email == null || email.isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
+        // business logic
         service.postEmail(data.get("email"));
 
+        // egress
+        LOG.info("POST /api/email successful");
         return ResponseEntity.status(HttpStatus.OK).build();
     }
     
     @PostMapping(path = "/code", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<User> postCode(@RequestBody Map<String, String> data) {
-        User user = service.postCode(data.get("email"), data.get("code"));
+        // ingress
+        LOG.info("POST /api/code with {}", data);
 
+        // no explicit validation
+
+        // business logic
+        User user = service.postCode(data.get(User.EMAIL_KEY), data.get(User.CODE_KEY));
         if (user == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
+        // egress
+        LOG.info("POST /api/code successful");
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     @GetMapping(path = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<User> getUser(@RequestParam String userId, @RequestParam String code) {
-        User user = service.getUser(userId, code);
+        // ingress
+        LOG.info("GET /api/user with userId {} and code {}", userId, code);
 
+        // no explicit validation
+
+        // business logic
+        User user = service.getUser(userId, code);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
+        // egress
+        LOG.info("GET /api/user successful");
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     @PostMapping(path = "/user", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> postCode(@RequestBody User user) {
-        HttpStatus httpStatus = service.saveUser(user);
+    public ResponseEntity<Void> postUser(@RequestBody Map<String, String> data) {
+        // ingress
+        LOG.info("POST /api/user with {}", data);
+
+        // no explicit validation
+
+        // business logic
+        HttpStatus httpStatus = service.saveUser(data);
+
+        // egress
+        LOG.info("POST /api/user successful");
         return ResponseEntity.status(httpStatus).build();
     }
 
     @GetMapping(path = "/players", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<String>> getPlayers() {
-        return ResponseEntity.status(HttpStatus.OK).body(service.getPlayers());
+        // ingress
+        LOG.info("GET /api/players");
+
+        // no explicit validation
+
+        // business logic
+        List<String> players = service.getPlayers();
+
+        // egress
+        LOG.info("GET /api/players successful");
+        return ResponseEntity.status(HttpStatus.OK).body(players);
     }
 
     @PostMapping(path = "/linkPartner", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> linkPartner(@RequestBody Map<String, String> data) {
-        HttpStatus httpStatus = service.linkPartner(data.get("userId"), data.get("code"));
+        // ingress
+        LOG.info("POST /api/linkPartner with {}", data);
+
+        // no explicit validation
+
+        // business logic
+        HttpStatus httpStatus = service.linkPartner(data.get(User.USER_ID_KEY), data.get(User.CODE_KEY));
+
+        // egress
+        LOG.info("POST /api/linkPartner successful");
         return ResponseEntity.status(httpStatus).build();
     }
 }

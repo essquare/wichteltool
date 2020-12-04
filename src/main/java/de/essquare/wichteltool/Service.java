@@ -2,6 +2,7 @@ package de.essquare.wichteltool;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,7 +30,6 @@ class Service {
 
     public void postEmail(String email) {
         User user = dbRepository.getByEmail(email);
-
         if (user == null) {
             user = User.build()
                        .withUserId(UUID.randomUUID().toString())
@@ -37,7 +37,6 @@ class Service {
         }
 
         String logincode = UUID.randomUUID().toString().replaceAll("-", ""); // it's easier to copy&paste without dashes
-        System.out.println("logincode: " + logincode);
         user.setCode(logincode);
         if (dbRepository.usersEmpty()) {
             // the first user becomes admin
@@ -50,8 +49,7 @@ class Service {
                 .withMessage(new Message()
                                      .withBody(new Body().withText(new Content().withCharset("UTF-8").withData("dein Login Code lautet " + logincode)))
                                      .withSubject(new Content().withCharset("UTF-8").withData("Login Code")))
-//                .withSource("wichteltool@essquare.de");
-                .withSource("dirk.podolak@essquare.de");
+                .withSource("dirk.podolak@essquare.de"); // I'd like to  use "wichteltool@essquare.de", but it does not exist and therefore cannot be validated for AWS SES
         sesClient.sendEmail(request);
     }
 
@@ -75,18 +73,18 @@ class Service {
         return mapPartner(user);
     }
 
-    public HttpStatus saveUser(final User userWithNewData) {
-        User currentUser = dbRepository.load(userWithNewData.getUserId());
+    public HttpStatus saveUser(Map<String, String> data) {
+        String userId = data.get(User.USER_ID_KEY);
+        User currentUser = dbRepository.load(userId);
 
-        if (!currentUser.getCode().equals(userWithNewData.getCode())) {
+        if (!currentUser.getCode().equals(data.get(User.CODE_KEY))) {
             return HttpStatus.FORBIDDEN;
         }
 
-        // this cannot be overwritten
-        userWithNewData.setPartner(currentUser.getPartner());
-        userWithNewData.setAdmin(currentUser.isAdmin());
+        // currently there is only one field that can be overwritten
+        currentUser.setUsername(data.get(User.USERNAME_KEY));
 
-        dbRepository.save(userWithNewData);
+        dbRepository.save(currentUser);
 
         return HttpStatus.OK;
     }
@@ -97,7 +95,7 @@ class Service {
                            .collect(Collectors.toList());
     }
 
-    public HttpStatus linkPartner(final String userId, final String code) {
+    public HttpStatus linkPartner(String userId, String code) {
         User currentUser = dbRepository.load(userId);
 
         if (!currentUser.getCode().equals(code)) {
@@ -120,7 +118,7 @@ class Service {
         return HttpStatus.OK;
     }
 
-    public User getUser(final String userId, final String code) {
+    public User getUser(String userId, String code) {
         User user = dbRepository.load(userId);
 
         if (user == null) {
